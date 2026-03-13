@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { KrMarketOverview } from '@/types/market';
 
+export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
+
 // Yahoo Finance API를 사용하여 KOSPI 지수 가져오기
 async function fetchKospiIndex() {
   try {
@@ -9,6 +12,7 @@ async function fetchKospiIndex() {
       headers: {
         'User-Agent': 'Mozilla/5.0',
       },
+      signal: AbortSignal.timeout(8000),
     });
     
     if (!response.ok) {
@@ -53,6 +57,7 @@ async function fetchKoreanStocks() {
         const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`;
         const response = await fetch(url, {
           headers: { 'User-Agent': 'Mozilla/5.0' },
+          signal: AbortSignal.timeout(5000),
         });
         
         if (!response.ok) return null;

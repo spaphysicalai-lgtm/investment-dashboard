@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { CryptoOverview } from '@/types/crypto';
 
+export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     // Fallback 데이터

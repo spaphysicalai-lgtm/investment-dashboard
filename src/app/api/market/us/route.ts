@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { UsMarketOverview } from '@/types/market';
 
+export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
+
 // Yahoo Finance API를 사용하여 실제 데이터 가져오기
 async function fetchYahooQuote(symbol: string) {
   try {
@@ -9,6 +12,7 @@ async function fetchYahooQuote(symbol: string) {
       headers: {
         'User-Agent': 'Mozilla/5.0',
       },
+      signal: AbortSignal.timeout(8000),
     });
     
     if (!response.ok) {
@@ -38,8 +42,8 @@ async function fetchTopMovers() {
     const losersUrl = 'https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&scrIds=day_losers&count=3';
     
     const [gainersRes, losersRes] = await Promise.all([
-      fetch(gainersUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } }),
-      fetch(losersUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } }),
+      fetch(gainersUrl, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(8000) }),
+      fetch(losersUrl, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(8000) }),
     ]);
     
     const gainersData = await gainersRes.json();
