@@ -39,8 +39,8 @@ export default function UsMarketPanel() {
   useEffect(() => {
     fetchMarketData();
     
-    // 30초마다 자동 갱신
-    const interval = setInterval(fetchMarketData, 30000);
+    // 1분마다 자동 갱신
+    const interval = setInterval(fetchMarketData, 60000);
     
     return () => clearInterval(interval);
   }, []);

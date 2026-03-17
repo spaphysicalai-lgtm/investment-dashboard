@@ -39,8 +39,8 @@ export default function CryptoPanel() {
   useEffect(() => {
     fetchCryptoData();
     
-    // 30초마다 자동 갱신
-    const interval = setInterval(fetchCryptoData, 30000);
+    // 1분마다 자동 갱신
+    const interval = setInterval(fetchCryptoData, 60000);
     
     return () => clearInterval(interval);
   }, []);
