@@ -14,7 +14,13 @@ export default function UsMarketPanel() {
       setLoading(true);
       setError(null);
       
-      const response = await fetch('/api/market/us');
+      const response = await fetch('/api/market/us', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+        },
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch US market data');
       }

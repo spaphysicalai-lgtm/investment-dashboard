@@ -14,7 +14,13 @@ export default function KrMarketPanel() {
       setLoading(true);
       setError(null);
       
-      const response = await fetch('/api/market/kr');
+      const response = await fetch('/api/market/kr', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+        },
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch Korea market data');
       }

@@ -14,7 +14,13 @@ export default function CryptoPanel() {
       setLoading(true);
       setError(null);
       
-      const response = await fetch('/api/crypto/overview');
+      const response = await fetch('/api/crypto/overview', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+        },
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch crypto data');
       }
