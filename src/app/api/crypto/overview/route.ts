@@ -20,7 +20,10 @@ export async function GET() {
 
     // 1. 업비트 BTC-KRW 호출
     try {
-      const upbitResponse = await fetch('https://api.upbit.com/v1/ticker?markets=KRW-BTC');
+      const upbitResponse = await fetch('https://api.upbit.com/v1/ticker?markets=KRW-BTC', {
+        cache: 'no-store',
+        next: { revalidate: 0 }
+      });
       if (upbitResponse.ok) {
         const upbitData = await upbitResponse.json();
         if (upbitData && upbitData[0] && upbitData[0].trade_price) {
@@ -34,7 +37,11 @@ export async function GET() {
     // 2. CoinGecko BTC-USD 호출
     try {
       const coingeckoResponse = await fetch(
-        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'
+        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd',
+        {
+          cache: 'no-store',
+          next: { revalidate: 0 }
+        }
       );
       if (coingeckoResponse.ok) {
         const coingeckoData = await coingeckoResponse.json();
@@ -48,7 +55,10 @@ export async function GET() {
 
     // 3. 환율 USD/KRW 호출
     try {
-      const exchangeResponse = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+      const exchangeResponse = await fetch('https://api.exchangerate-api.com/v4/latest/USD', {
+        cache: 'no-store',
+        next: { revalidate: 0 }
+      });
       if (exchangeResponse.ok) {
         const exchangeData = await exchangeResponse.json();
         if (exchangeData && exchangeData.rates && exchangeData.rates.KRW) {

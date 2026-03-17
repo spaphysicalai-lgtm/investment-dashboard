@@ -9,6 +9,8 @@ async function fetchKospiIndex() {
   try {
     const url = 'https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11';
     const response = await fetch(url, {
+      cache: 'no-store',
+      next: { revalidate: 0 },
       headers: {
         'User-Agent': 'Mozilla/5.0',
       },
@@ -56,6 +58,8 @@ async function fetchKoreanStocks() {
       try {
         const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`;
         const response = await fetch(url, {
+          cache: 'no-store',
+          next: { revalidate: 0 },
           headers: { 'User-Agent': 'Mozilla/5.0' },
           signal: AbortSignal.timeout(5000),
         });

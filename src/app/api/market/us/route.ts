@@ -9,6 +9,8 @@ async function fetchYahooQuote(symbol: string) {
   try {
     const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`;
     const response = await fetch(url, {
+      cache: 'no-store',
+      next: { revalidate: 0 },
       headers: {
         'User-Agent': 'Mozilla/5.0',
       },
@@ -42,8 +44,8 @@ async function fetchTopMovers() {
     const losersUrl = 'https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&scrIds=day_losers&count=3';
     
     const [gainersRes, losersRes] = await Promise.all([
-      fetch(gainersUrl, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(8000) }),
-      fetch(losersUrl, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(8000) }),
+      fetch(gainersUrl, { cache: 'no-store', next: { revalidate: 0 }, headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(8000) }),
+      fetch(losersUrl, { cache: 'no-store', next: { revalidate: 0 }, headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(8000) }),
     ]);
     
     const gainersData = await gainersRes.json();
