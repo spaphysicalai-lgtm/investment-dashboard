@@ -8,6 +8,9 @@ export default function CryptoPanel() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string>('');
+  const [aiAdvice, setAiAdvice] = useState<string>('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string>('');
 
   const fetchCryptoData = async () => {
     try {
@@ -53,6 +56,46 @@ export default function CryptoPanel() {
 
   const handleRefresh = () => {
     fetchCryptoData();
+  };
+
+  const fetchAIAdvice = async () => {
+    if (!cryptoData) return;
+
+    setAiLoading(true);
+    setAiError('');
+
+    try {
+      const prompt = `현재 비트코인 시장 상황:
+- 한국 가격 (업비트): ${cryptoData.btcKrw.price.toLocaleString('ko-KR')}원
+- 미국 가격 (CoinGecko): $${cryptoData.btcUsd.price.toLocaleString('en-US')}
+- 환율 (USD/KRW): ${cryptoData.fxUsdKrw.toFixed(2)}원
+- 김치프리미엄: ${cryptoData.kimchiPremium.toFixed(2)}%
+
+위 데이터를 바탕으로 비트코인 투자 의견을 3-4문장으로 간단명료하게 제시해주세요. 매수, 매도, 관망 중 하나를 추천하고 그 이유를 설명해주세요.`;
+
+      const response = await fetch('/api/gpt/test', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          type: 'text',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'AI 조언을 가져오는데 실패했습니다.');
+      }
+
+      setAiAdvice(data.response);
+    } catch (err) {
+      setAiError(err instanceof Error ? err.message : 'AI 조언을 가져오는데 실패했습니다.');
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   if (loading && !cryptoData) {
@@ -133,6 +176,37 @@ export default function CryptoPanel() {
             {cryptoData.kimchiPremium >= 0 ? '+' : ''}{cryptoData.kimchiPremium.toFixed(2)}%
           </span>
         </div>
+      </div>
+
+      {/* AI Investment Advice */}
+      <div className="mt-6 pt-4 border-t border-gray-200">
+        <button
+          onClick={fetchAIAdvice}
+          disabled={aiLoading || !cryptoData}
+          className="w-full px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-400 rounded-lg transition-all shadow-md hover:shadow-lg"
+        >
+          {aiLoading ? '🤖 AI 분석 중...' : '🤖 AI 투자 의견 받기'}
+        </button>
+
+        {aiError && (
+          <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm text-red-700">{aiError}</p>
+          </div>
+        )}
+
+        {aiAdvice && !aiError && (
+          <div className="mt-3 p-4 bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start gap-2">
+              <span className="text-2xl">🤖</span>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-gray-800 mb-1">AI 투자 의견</p>
+                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                  {aiAdvice}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Last Updated */}
