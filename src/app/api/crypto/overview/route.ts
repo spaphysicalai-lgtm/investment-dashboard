@@ -9,7 +9,7 @@ export async function GET() {
     // Fallback 데이터
     const fallback: CryptoOverview = {
       btcKrw: { price: 100000000, exchange: 'Upbit' },
-      btcUsd: { price: 70000, exchange: 'CoinGecko' },
+      btcUsd: { price: 70000, exchange: 'Binance' },
       fxUsdKrw: 1300,
       kimchiPremium: 0,
     };
@@ -34,23 +34,23 @@ export async function GET() {
       console.error('Upbit API error:', error);
     }
 
-    // 2. CoinGecko BTC-USD 호출
+    // 2. Binance BTC-USDT 호출 (CoinGecko 대신 사용 - Rate Limit이 더 넉넉함)
     try {
-      const coingeckoResponse = await fetch(
-        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd',
+      const binanceResponse = await fetch(
+        'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT',
         {
           cache: 'no-store',
           next: { revalidate: 0 }
         }
       );
-      if (coingeckoResponse.ok) {
-        const coingeckoData = await coingeckoResponse.json();
-        if (coingeckoData && coingeckoData.bitcoin && coingeckoData.bitcoin.usd) {
-          btcUsdPrice = coingeckoData.bitcoin.usd;
+      if (binanceResponse.ok) {
+        const binanceData = await binanceResponse.json();
+        if (binanceData && binanceData.price) {
+          btcUsdPrice = parseFloat(binanceData.price);
         }
       }
     } catch (error) {
-      console.error('CoinGecko API error:', error);
+      console.error('Binance API error:', error);
     }
 
     // 3. 환율 USD/KRW 호출
@@ -79,7 +79,7 @@ export async function GET() {
       },
       btcUsd: {
         price: btcUsdPrice,
-        exchange: 'CoinGecko',
+        exchange: 'Binance',
       },
       fxUsdKrw: fxUsdKrw,
       kimchiPremium: kimchiPremium,
@@ -92,7 +92,7 @@ export async function GET() {
     // 전체 실패 시 fallback 반환
     const fallback: CryptoOverview = {
       btcKrw: { price: 100000000, exchange: 'Upbit' },
-      btcUsd: { price: 70000, exchange: 'CoinGecko' },
+      btcUsd: { price: 70000, exchange: 'Binance' },
       fxUsdKrw: 1300,
       kimchiPremium: 0,
     };
